@@ -1,0 +1,10 @@
+{
+  "dependencies": ["."],
+  "graphs": {
+    "intro": "./app/agent.py:graph",
+    "llm": "./app/llm.py:graph",
+    "call_tools": "./app/call_tools.py:graph"
+  },
+  "python_version": "3.11",
+  "env": ".env"
+}
