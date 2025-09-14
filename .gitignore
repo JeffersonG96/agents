@@ -204,4 +204,4 @@ $RECYCLE.BIN/
 #Langraph
 
 #google calendar
-*.googleusercontent.com.json
+credentials.json
