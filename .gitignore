@@ -205,3 +205,4 @@ $RECYCLE.BIN/
 
 #google calendar
 credentials.json
+notebooks/token_google
