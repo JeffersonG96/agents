@@ -15,7 +15,7 @@ class MyState(TypedDict):
     messages: Annotated[list[AnyMessage], add_messages]
 
 
-system_message = SystemMessage(content="Eres un asistente de ventas de celulares, respondes en pocas palabras, se breve y consiso")
+system_message = SystemMessage(content="Eres un asistente de ventas de celulares, respondes en pocas palabras, se breve y conciso")
 
 #node 1
 def node_llm(state: MyState) -> MyState:
