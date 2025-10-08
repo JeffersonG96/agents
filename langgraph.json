@@ -3,7 +3,8 @@
   "graphs": {
     "intro": "./app/agent.py:graph",
     "llm": "./app/llm.py:graph",
-    "call_tools": "./app/call_tools.py:graph"
+    "call_tools": "./app/call_tools.py:graph",
+    "externaldb": "./app/04_external_db.py:graph"
   },
   "python_version": "3.11",
   "env": ".env"
