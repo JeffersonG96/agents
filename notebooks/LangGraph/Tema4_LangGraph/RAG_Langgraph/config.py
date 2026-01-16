@@ -1,2 +1,2 @@
-DOCUMENTS_PATH="D:\\Cursos\\LLM\\proyectos\\agentes\\introduccion\\notebooks\\LangGraph\\Tema4_LangGraph\\Proyecto_final\\docs"
+DOCUMENTS_PATH="D:\\Cursos\\LLM\\proyectos\\agentes\\introduccion\\notebooks\\LangGraph\\Tema4_LangGraph\\RAG_Langgraph\\docs"
 VDB_PATH="D:\\Cursos\\LLM\\proyectos\\agentes\\introduccion\\notebooks\\LangGraph\\Tema4_LangGraph\\RAG_Langgraphb"
