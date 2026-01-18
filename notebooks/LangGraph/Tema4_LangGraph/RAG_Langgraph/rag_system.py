@@ -97,14 +97,14 @@ class RagRetriver:
             }
 
         #Extraer contexto y metadata
-        contexts = []
+        contexts_partes = []
         fuentes = []
         pages = []
 
-        for i, doc in enumerate(documents):
+        for i, doc in enumerate(documents[:2]):
             context = doc.page_content.strip()
             if context:
-                contexts.append(context)
+                contexts_partes.append(context)
 
                 #Extrae fuentes
                 fuente = doc.metadata.get('filename',f'doc_{i}')
@@ -123,14 +123,42 @@ class RagRetriver:
                     "pages": pages
                 }
 
+        contexto = "\n\n".join(contexts_partes)
+        respuesta = self._generar_respuesta(consulta, contexto)
+        
+        return {
+            "respuesta": respuesta,
+            "fuentes": fuentes,
+            "pages": pages
+        }
+    
+    def _generar_respuesta(self, consulta: str, contexto: str):
+        """Generar la respuesta con datos de vectorstore y llm"""
+        prompt = ChatPromptTemplate.from_template(
+        """
+        Eres un experto en respondet unicamente con el contexto de la base de conocimiento.
+        Instrucciones:
+        - Proporciona una respuesta clara, directa y útil
+        - Si el contexto no contiene información suficiente, dilo claramente
+        - No agregues nada al final como por ejemplo: si necesitas más detalles, no dudes en preguntar.
+        - No inventes información que no esté en el contexto
 
+        Contexto de la base de conocimiento: {contexto}
 
-        return 
+        Consulta del usuario: {consulta}
+        """
+        )
+
+        try:
+            respuesta = self.llm.invoke(prompt.format(consulta=consulta, contexto=contexto))
+            return respuesta.content.strip()
+        except Exception as e:
+            return "No se pudo procesar la consulta con el contexto de vectorstore"
 
 def main():
 
     documents_retriever = RagRetriver(chroma_path=VDB_PATH)
-    print(documents_retriever.buscar("arquitectura de un sistema embebido FPGA")[:2])
+    print(documents_retriever.buscar("Quién es gerente de marketing ?"))
 
 if __name__ == "__main__":
     main()

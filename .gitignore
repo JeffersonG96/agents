@@ -142,6 +142,7 @@ venv.bak/
 # mkdocs documentation
 /site
 
+
 # mypy
 .mypy_cache/
 .dmypy.json
@@ -203,6 +204,8 @@ $RECYCLE.BIN/
 
 #File
 *.mp4
+*.md
+*.pdf
 
 #Langraph
 
