@@ -155,6 +155,8 @@ class RagRetriver:
         except Exception as e:
             return "No se pudo procesar la consulta con el contexto de vectorstore"
 
+
+#Test
 def main():
 
     documents_retriever = RagRetriver(chroma_path=VDB_PATH)
