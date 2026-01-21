@@ -9,18 +9,18 @@ from langchain_openai import ChatOpenAI
 from langchain_core.prompts import ChatPromptTemplate
 from langgraph.graph import StateGraph, START, END
 from langgraph.graph.message import add_messages
-from langchain_core.messages import AnyMessage
-from langgraph.checkpoint.memory import MemorySaver
+from langchain_core.messages import RemoveMessage, AnyMessage
+from langgraph.checkpoint.memory import MemorySaver 
 
 
 
 class MyState(TypedDict):
     consulta: str
     respuesta: str
-    categoria: Optional[str]
-    fuentes: list
-    pages: list
-    historial: Annotated[List[str], add]
+    fuentes: Optional[list]
+    pages: Optional[list]
+    historial: Annotated[List[AnyMessage], add_messages]
+    resumen: Annotated[List[str], add]
 
 class AsistentePersonal():
 
@@ -50,7 +50,7 @@ class AsistentePersonal():
     
     def resumir_conversacion(self, state: MyState) -> dict[str, Any]:
         historial = state.get('historial')
-        print(f"Resumen con una longitud de {len(historial)}")
+        print(f"Resumen con una longitud de {len(historial)}") 
 
         if historial:
             prompt = ChatPromptTemplate.from_template(
@@ -64,12 +64,13 @@ class AsistentePersonal():
             )
 
             try:
-                print("=*50")
+                print("="*50)
                 resp = self.llm.invoke(prompt.format(historial=historial))
                 resumen = resp.content.strip()
-                #! Remover mensajes 
+                delete_messages = [RemoveMessage(id=m.id) for m in state["historial"][:-2]]
                 return {
-                "historial":[resumen]
+                "historial": delete_messages,
+                "resumen": [resumen]
                 }
             except Exception as e:
                 print(f"ERROR, no se puede resumir: {e}")
@@ -77,6 +78,10 @@ class AsistentePersonal():
         return {
             "historial":["No se encontro mensajes para resumir"]
         }
+    
+    def eliminar_mensajes(self, state: MyState) -> dict[str, any]:
+        """Elimina todos los mensajes menos los últimos dos"""
+        return {"historial": state.get('historial')[-2:]}
     
     def decidir_router(self, state: MyState):
         """Verifica la longitud de los mensajes en el historial"""
@@ -93,13 +98,16 @@ class AsistentePersonal():
         #agregar nodos
         grafo.add_node("consulta", self.ejecutar_rag)
         grafo.add_node("resumir",self.resumir_conversacion)
+        grafo.add_node("eliminar",self.eliminar_mensajes)
 
         #workflow
         grafo.add_edge(START, "consulta")
+
         grafo.add_conditional_edges("consulta",self.decidir_router, {
             "resumir":"resumir",
             END:END
         })
+
         grafo.add_edge("resumir",END)
 
         compiled = grafo.compile(checkpointer=self.memory)
@@ -124,9 +132,17 @@ def main():
     config=config )
     print(resultado1)
 
-    resultado2 = asistente.crear_grafo().invoke({"consulta":"Que es Labview ?"}, 
+    resultado2 = asistente.crear_grafo().invoke({"consulta":"En pocas palabras explica la arquitectura de un sistema embebido?"}, 
     config=config )
     print(resultado2)
+ 
+    resultado3 = asistente.crear_grafo().invoke({"consulta":"en 10 palabras explica el modulo de E/S"}, 
+    config=config )
+    print(resultado3)
+
+    resultado4 = asistente.crear_grafo().invoke({"consulta":"que es el chasis reconfigurable ?"}, 
+    config=config )
+    print(resultado4)
     
 
 
